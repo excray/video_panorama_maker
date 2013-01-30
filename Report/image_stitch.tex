@@ -1,0 +1,50 @@
+\subsection{Image Stitching} \label{sec:ImageStitch}
+Image stitching consisted of two main parts; aligning individual images together based off of the homographies 
+and then blending the aligned images together into the final panorama. 
+
+\subsubsection{Alignment}
+Image alignment depends solely on the homography between two individual frames. In our implementation we 
+calculate the homography between two consecutive frames and extract the associated translations; this allows
+us to align the images in preparation for blending later on. From the homography calculation, we disregard
+any knowledge of skew and rotation and thus maintain the rectangular proportion of each frame. This allows 
+alignment to be simplified in addition to easier blending calculations explained in the next section.
+
+\subsubsection{Blending}
+Image blending is an important part of the stitching process. The method used in blending directly relates to
+the quality of the final panorama produced. The blending process we utilized consisted of three steps, taking
+a distance-weighted average for each pixel value, median-bilateral filtering, and incorporating the visual 
+quality measurement. The overlapping area between frames consist of multiple pixels that need to blended 
+together. The overall equation that is used is as follows:
+\begin{equation}
+I^P(X)=\displaystyle\sum_{k} w_k(x)\tilde{I}_k(x)/\displaystyle\sum_{k} w_k(x)
+\end{equation}
+
+Where $I_P(X)$ is the pixel value at index $x$ for panorama number $P$, $w_k(x)$ is the weighting for the 
+pixel at index $x$ in frame number $k$, and $\tilde{I}_k(x)$ is the intensity of the pixel at index $x$ in 
+it's corresponding frame $k$. The weighting for each pixel is the product of three calculations:
+\begin{equation}
+w_k(x) = w_{k1}(x)w_{k2}(x)w_{k3}(x)
+\end{equation}
+
+The final weighting for each pixel is the product of three calculations, $w_{k1}(x)$ is the shortest horizontal 
+distance of the pixel $x$ from the nearest vertical edge; this is done to give more weight to those pixels to 
+the center of the image than those at the edge. This calculation is represented by the following equation:
+\begin{equation}
+w_{k1}(x) =  \| \text{arg} \displaystyle\min_{y}\{\|y\|\; \tilde{I}_k (x+y) \text{ is invalid} \}\|
+\end{equation}
+
+Following which $w_{k2}(x)$ is the weighting as a result of a median-bilateral filter which takes into account
+the average (median) value of all the pixels that overlap, from different frames, in the final panorama; this
+is calculated using the equation shown below:
+\begin{equation}
+w_{k2}(x) = exp (-(\tilde{I}_k(x)-med(x))^2/\sigma^2)
+\end{equation}
+
+Lastly, the third term of the weight calculation, $w_{k3}(x)$, takes into account the individual quality of 
+each frame that the pixel belongs to. The pixels that come frame a frame that is of a higher quality contribute
+a higher weight to the final result; this is shown in the equation below:
+\begin{equation}
+w_{k3}(x) = exp (-(\gamma q_{bk}(k) + (1 - \gamma)q_{br}(k)))
+\end{equation}
+
+This blending method is applied to each color (RGB) in turn and the resulting image is the blended panorama.

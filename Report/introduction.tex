@@ -1,0 +1,31 @@
+% 1 Introduction:
+\section{Introduction}
+A panoramic image is a wide angle view of a particular scene. Panoramic imagery can be found in many places 
+and has been used throughout history as a method to showcase large scenes in their entirety. Often, it is 
+difficult to take photographs of a wide field-of-view without specialized equipement. As a result, research
+in computer vision has identified methods in panorama stitching that combine multiple images with some 
+overlap into a single panoramic image. Videos provide a source in which the likelihood of a panorama is high;
+when a video pans, each frame overlaps with the previous to form a series of images with a wide field-of-view.
+\par
+Panorama stitching algorithms consist of two main steps; aligning images together by calculating homography
+values between image pairs followed by blending them together to provide a clean transition between images.
+Most algorithms also require that the input images have been identified as high quality and are supplied in 
+the correct order ready for alignment and blending. Additionally, panoramas are restricted by the supply of
+photographs of the physical destination. 
+\par 
+In these times, there exist vast caches of pictures and videos made available online through services such as
+YouTube \cite{YouTube}, Vimeo \cite{Vimeo}, Picasa \cite{Picasa}, and many more. These resources can provide access
+to multimedia content pertaining to many places around the world. Video sources have especially become common
+for many of the popular places around the world, with many of these having the potential for becoming future
+panoramas. Some of these videos are not of high quality and thus cannot be used to create a panorama. In an 
+effort to identify these videos, we use three conditions; a video must cover a wide field-of-view, the video
+must satisfy the thresholds for each image quality critereon, and that the video provides frames that relate
+to each other through homographies and are not an individual collection of separate images.
+\par
+In this paper, we apply the strategy of panorama discovery in web videos identified in Liu et al \cite{Feng} 
+with some improvements to shot detection and panorama discovery. A large part of our implementation focuses
+on detecting panoramas compared with the majority of research being done on panorama stitching. This focus
+is important as it allows users to automate the process of readying media for panorama stitching and provides
+a framework for discovering panoramas automatically from videos. We have split our design into five specific 
+parts, shot detection, homography calculation, quality calculation, panorama discovery, and image stitching. 
+The overall flow and how these parts are connected is shown in Figure (\ref{fig:HLD}).

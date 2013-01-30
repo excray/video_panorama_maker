@@ -1,0 +1,50 @@
+\documentclass[10pt]{article}
+\usepackage[]{graphicx}
+\usepackage{caption}
+\usepackage{subfigure}
+\usepackage{amsmath}
+\usepackage{float}
+%\usepackage{epsfig}
+\usepackage{lipsum}
+\usepackage[margin=1in]{geometry}
+\usepackage{multicol}
+\usepackage{abstract}
+\usepackage{indentfirst}
+\renewcommand{\abstractnamefont}{\normalfont\bfseries} % Set the "Abstract" text to bold
+\renewcommand{\abstracttextfont}{\normalfont\small\itshape} % Set the abstract itself to small italic text
+
+\setlength{\columnsep}{0.3in}
+
+\author{Apoorva Bansal, Jay Patel, Vivek Gokuladas}
+\title{Discovering Panoramas in Web Videos}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+
+% Abstract:
+\input{abstract}
+
+
+% Report:
+\begin{multicols}{2}
+\input{introduction}
+\end{multicols}
+
+\begin{figure}[t] 
+  \centering
+  \includegraphics[scale=1.2]{HLD.png}  
+  \caption{High Level Diagram.} \label{fig:HLD}
+\end{figure}
+
+\begin{multicols}{2}
+\input{contributions}
+\input{technical_solution}
+\input{experiments}
+\input{conclusions}
+\input{references}
+\end{multicols}
+
+
+\end{document}

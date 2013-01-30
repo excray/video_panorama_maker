@@ -1,0 +1,29 @@
+\section{Experiments}
+
+The experimental results of our panorama discovery algorithm is shown in Section (\ref{sec:PanDiscExpSec}), and blending algorithm is
+shown in Section (\ref{sec:BlendExpSec}).
+
+\input{panorama_disc_exp}
+
+\end{multicols}
+
+% Figures for Blending
+\begin{figure} [H]
+	\centering
+	\subfigure[Without Median-Bilateral Filter.]{
+		\centering
+		\includegraphics[width=70mm,height=40mm]{withoutFilter.jpg}  
+		\label{fig:withoutFilter}
+	}	
+	\subfigure[With Median-Bilateral Filter.]{
+		\centering
+		\includegraphics[width=70mm,height=40mm]{withFilter.jpg}  
+		\label{fig:withFilter}	
+	}
+	\caption{Effects of the median-bilateral filter on the final stitched image.} \label{fig:BlendFilterExp}	
+\end{figure}
+
+\begin{multicols}{2}
+
+\input{blending_exp}
+

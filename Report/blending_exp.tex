@@ -1,0 +1,11 @@
+\subsection{Blending} \label{sec:BlendExpSec}
+
+We implemented a three stage blending algorithm as discussed in Section (\ref{sec:ImageStitch}).  
+The first stage is a feathering algorithm, common for stitching panoramas.
+Feathering algorithms tend to leave ghosting artifacts shown in Figure (\ref{fig:withoutFilter}).
+Ghosting artifacts are a result of moving objects between frames.  This is a major problem since we use videos as our panorama sources.
+Videos tend to have moving objects.  Our solution was to implement a median-bilateral filter in the second stage.
+The median-bilateral filter mitigates ghosting artifacts as shown in Figure (\ref{fig:withFilter}).
+
+
+

@@ -1,0 +1,22 @@
+% Determine Fastest Optical Flow (LK) Script
+
+numLevels = 2;
+windowSize = 3;
+iterations = 3;
+
+% Script 1:
+t_0 = cputime;
+
+[dx_1, dy_1, rel_1] = HierarchicalLK(double(img1), double(img2), numLevels, windowSize, iterations, 0);
+
+t_1 = cputime;
+
+% Script 2:
+t_2 = cputime;
+
+[dx_1, dy_1, rel_1] = optFlowLk(double(img1), double(img2), windowSize);
+
+t_3 = cputime;
+
+disp(['Time for first script: ' num2str(t_1-t_0)]);
+disp(['Time for second script: ' num2str(t_3-t_2)]);

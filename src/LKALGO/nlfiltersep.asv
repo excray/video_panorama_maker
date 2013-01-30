@@ -1,0 +1,91 @@
+function I = nlfiltersep( I, dims, shape, fun, varargin )
+% Efficient multidimensional nonlinear but seperable filtering operation.
+%
+% The concept of a nonlinear seperable filter is less common, but can prove
+% useful since computation time can be reduced. Consider a funciton like
+% max that is applied to a 2 dim window. max could be applied to each row
+% of the window, then to the resulting column, giving the same result. This
+% is what is meant here by a seperable nonlinear filter. It is also useful
+% to model convolution with an all ones mask as a nonlinear filter as it
+% allows for a very efficient implementation.
+%
+% If shape is not 'block', the function fun must be able to take an input
+% of the form C=fun(I,radius,prm1,...,prmk). The return C must have the
+% same size as I, and each element of C must be the result of applying the
+% nlfilt operation to the local column (of size 2r+1) of A.
+%
+% If shape is 'block', nlfiltersep applies operations to nonoveralpping
+% blocks (versus a sliding window in which all overlapping blocks are
+% considered). In this case the function fun must be able to take an input
+% of the form C=fun(I,dim,prm1,...,prmk) and apply the operation along
+% given dimension, collapsing dim to size 1 (see example below).
+%
+% USAGE
+%  I = nlfiltersep( I, dims, shape, fun, varargin )
+%
+00026 % INPUTS
+00027 %  I       - matrix to compute fun over
+00028 %  dims    - size of volume to compute fun over, can be scalar
+00029 %  shape   - 'valid', 'full', 'same' or 'block'
+00030 %  fun     - nonlinear filter
+00031 %  params  - optional parameters for nonlinear filter
+00032 %
+00033 % OUTPUTS
+00034 %  I      - resulting image
+00035 %
+00036 % EXAMPLE
+00037 %  I=double(rgb2gray(imread('peppers.png')))/255;
+00038 %  Cs = nlfiltersep(I,[11 11],'same',@nlfiltersep_sum); % local sums
+00039 %  Cm = nlfiltersep(I,[11 11],'same',@nlfiltersep_max); % local maxes
+00040 %  figure(1); im(I); figure(2); im(Cs); figure(3); im(Cm);
+00041 %
+00042 % EXAMPLE 2
+00043 %  I=double(rgb2gray(imread('peppers.png')))/255;
+00044 %  Cs = nlfiltersep(I,[3 3],'block',@sum ); % block sums
+00045 %  Cm = nlfiltersep(I,[3 3],'block',@(x,d) max(x,[],d) ); % block maxes
+00046 %  figure(1); im(I); figure(2); im(Cs); figure(3); im(Cm);
+00047 %
+00048 % See also NLFILTER
+00049 %
+00050 % Piotr's Image&Video Toolbox      Version 2.41
+00051 % Copyright 2009 Piotr Dollar.  [pdollar-at-caltech.edu]
+00052 % Please email me if you find bugs, or have suggestions or questions!
+00053 % Licensed under the Lesser GPL [see external/lgpl.txt]
+00054 
+00055 params=varargin; nd=ndims(I); siz=size(I);
+00056 [dims,er]=checkNumArgs(dims,size(siz),0,1); error(er);
+00057 
+00058 if(strcmp(shape,'block'))
+00059   % trim I to have integer number of blocks
+00060   dims=min(dims,siz); siz=siz-mod(siz,dims);
+00061   if(~all(siz==size(I))); I=arrayCrop(I,ones(1,nd),siz); end
+00062   
+00063   % Apply filter along each dimension of I
+00064   siz=[dims; siz./dims]; siz=siz(:)'; I=reshape(I,siz);
+00065   for d=0:nd-1, I=feval(fun,I,1+d*2,params{:}); end
+00066   I=permute(I,[2:2:nd*2 1:2:nd*2]);
+00067   
+00068 else
+00069   % pad I to 'full' dimensions, note must pad pre with rs2!
+00070   rs1=max(0,floor((dims-1)/2)); rs2=ceil((dims-1)/2);
+00071   if(strcmp(shape,'valid') && any(dims>size(I))); I=[]; return; end
+00072   if(strcmp(shape,'full'))
+00073     I = padarray(I,rs2,0,'pre');
+00074     I = padarray(I,rs1,0,'post');
+00075   end
+00076   
+00077   % Apply filter along first dimension of I then shift dimensions
+00078   for d=1:nd
+00079     if( dims(d)>0 ), siz=size(I);
+00080       I = reshape(feval(fun,I,rs1(d),rs2(d),params{:}),siz);
+00081     end
+00082     I = shiftdim( I, 1 );
+00083   end
+00084   
+00085   % crop to appropriate size
+00086   if(strcmp(shape,'valid'))
+00087     I = arrayCrop( I, rs1+1, size(I)-rs2 );
+00088   elseif(~strcmp(shape,'full') && ~strcmp(shape,'same'))
+00089     error('unknown shape');
+00090   end
+00091 end

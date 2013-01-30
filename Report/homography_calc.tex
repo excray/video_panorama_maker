@@ -1,0 +1,25 @@
+\subsection{Homography Calculation} \label{sec:HomoSec}
+
+The homography is determined between consecutive frames in order to align images.  
+SIFT is used to extract feature points of every frame.  
+We integrated the SIFT demo program provided by David Lowe \cite{Lowe} in our technical solution to expedite the process.  
+The RANSAC algorithm is used to obtain a robust homography from matching points between two sequential frames.  
+$H$ shown in equation (\ref{eq:HMat}) is the constrained homography model we used in our RANSAC implementation.  
+We assumed no skew or rotation in the homographies to simplify our image stitching implementation.  
+As a result, there were only translations between frames.  The translations are used in discovering panoramas and image stitching.
+
+\begin{equation} \label{eq:HMat}
+H=
+\left[ \begin{array}{ccc}
+1 & 0 & t_{x} \\
+0 & 1 & t_{y} \\
+0 & 0 & 1 \end{array} \right]
+\end{equation}
+
+The homography error is used as a measure for the motion model accuracy.  
+It is calculated as the average of second norm errors of each point.   
+The error of each point is between the matching SIFT feature point and calculated point from the homography.  
+
+
+
+
